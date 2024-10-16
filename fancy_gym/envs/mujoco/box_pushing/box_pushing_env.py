@@ -157,9 +157,10 @@ class BoxPushingEnvBase(MujocoEnv, utils.EzPickle):
         box_target_pos = self.sample_context()
         while np.linalg.norm(box_target_pos[:2] - box_init_pos[:2]) < 0.3:
             box_target_pos = self.sample_context()
-        # box_target_pos[0] = 0.4
-        # box_target_pos[1] = -0.3
-        # box_target_pos[-4:] = np.array([0.0, 0.0, 0.0, 1.0])
+        if not self.random_init:
+            box_target_pos[0] = 0.4
+            box_target_pos[1] = -0.3
+            box_target_pos[-4:] = np.array([0.0, 0.0, 0.0, 1.0])
         self.model.body_pos[2] = box_target_pos[:3]
         self.model.body_quat[2] = box_target_pos[-4:]
         self.model.body_pos[3] = box_target_pos[:3]
@@ -169,7 +170,7 @@ class BoxPushingEnvBase(MujocoEnv, utils.EzPickle):
         desired_tcp_pos = box_init_pos[:3] + np.array([0.0, 0.0, 0.15])
         desired_tcp_quat = np.array([0, 1, 0, 0])
         desired_joint_pos = self.calculateOfflineIK(desired_tcp_pos, desired_tcp_quat)
-        self.data.qpos[:7] = desired_joint_pos
+        self.data.qpos[:7] = desired_joint_pos if self.random_init else np.array([0., -0.369, 0., -2.345, 0., 2.39, 0.74])
 
         mujoco.mj_forward(self.model, self.data)
         self._steps = 0
