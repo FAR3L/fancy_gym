@@ -111,7 +111,7 @@ class BlackBoxWrapper(gym.ObservationWrapper):
             # cast dtype because metaworld returns incorrect that throws gym error
             return observation.astype(self.observation_space.dtype)
         else:
-            return observation
+            return {"policy": observation}
 
     def get_trajectory(self, action: Union[np.ndarray, torch.Tensor]) -> Tuple:
         assert (
@@ -268,7 +268,8 @@ class BlackBoxWrapper(gym.ObservationWrapper):
                     device=self.device,
                 )
                 observations = torch.zeros(
-                    size=(batch_size, trajectory_length) + self.env.observation_space.shape,
+                    size=(batch_size, trajectory_length)
+                    + self.env.observation_space.shape,
                     device=self.device,
                 )
             else:
